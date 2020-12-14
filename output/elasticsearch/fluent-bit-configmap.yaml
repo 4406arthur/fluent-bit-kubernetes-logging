@@ -45,16 +45,28 @@ data:
         Merge_Log_Key       log_processed
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
+        Annotations         Off
+        Labels              Off
+     
+   [FILTER]
+        Name            nest
+        Match           kube.*
+        Operation       lift
+        Wildcard        kubernetes.*
+        Nested_under    kubernetes
+        Add_prefix      k8s_
 
   output-elasticsearch.conf: |
     [OUTPUT]
-        Name            es
-        Match           *
-        Host            ${FLUENT_ELASTICSEARCH_HOST}
-        Port            ${FLUENT_ELASTICSEARCH_PORT}
-        Logstash_Format On
-        Replace_Dots    On
-        Retry_Limit     False
+        Name                es
+        Match               *
+        Host                ${FLUENT_ELASTICSEARCH_HOST}
+        Port                ${FLUENT_ELASTICSEARCH_PORT}
+        Logstash_Format     On
+        Logstash_Prefix_Key k8s_namespace_name
+        Generate_ID         On
+        Replace_Dots        On
+        Retry_Limit         False
 
   parsers.conf: |
     [PARSER]
